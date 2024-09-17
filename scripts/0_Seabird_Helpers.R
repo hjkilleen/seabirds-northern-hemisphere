@@ -5,12 +5,19 @@
 
 # Load all of the packages required for the analyses ---------------------------
   library(readxl)
+  #library(SOAR)
+  library(tidyverse)
+  #library(doMC)
+  library(reshape2)
+  library(broom)
+  library(lubridate)
 
 	library(nlme)
 	library(MASS)
 	library(car)
 	#library(mblm)
   library(astsa)
+  library(emmeans)
 
 	library(sf)
 	library(raster)
@@ -26,12 +33,7 @@
   library(viridis)
   library(kableExtra)
   library(ggpubr)
-
-	#library(SOAR)
-	library(tidyverse)
-	#library(doMC)
-  library(reshape2)
-  library(lubridate)
+  library(sjPlot)
 
 	#library(VoCC) # devtools::install_github("JorGarMol/VoCC", dependencies = TRUE, build_vignettes = TRUE)
 	#library(heatwaveR)

@@ -1,32 +1,26 @@
-#Frequentist modeling of seabird breeding success trends by ecosystem
+#Frequentist modeling of seabird breeding success and environmental trends by ecosystem
 #Helen Killeen, adapted from code written by Dave Shoeman
 
-# Thu Aug 17 13:53:55 2023 ------------------------------
+#Note that while chlorophyll-a content trends are calculated in this script, these trends are not included in the published manuscript
+#Supplementary tables for models are printed in HTML format using the kableExtra() package
+
+# Tue Sep 17 14:23:33 2024 ------------------------------
 
 #LIBRARIES & SOURCES
 #====
 source("scripts/0_Seabird_Helpers.R")
 dat <- readRDS("data/dat.rda")
-library(ggpubr)
-library(emmeans)
-library(sjPlot)
 #=====
 
-#SET UP ENVIRONMENTAL TRENDS
+#SET UP TO CALCULATE ENVIRONMENTAL TRENDS BY ECOSYSTEM
 #====
-dat <- filter(dat, lat>0)#limit to N hemisphere
-
-#drop the Med
-dat <- dat %>% mutate_if(is.character, as.factor)#convert new variables to factors
-dat <- droplevels(filter(dat, PROVINCE != "Mediterranean Sea"))#get rid of Med
-
-region_list <- unique(dplyr::select(dat, ECOREGION, PROVINCE))#get full list of sppsites
+region_list <- unique(dplyr::select(dat, ECOREGION, PROVINCE))#get full list of ecoregions and provinces
 region_list$file <- paste("data/ecoregion_environment/", gsub("/", "", gsub(" ", "_", region_list$ECOREGION)), "_MEOW.csv", sep = "")#add a file ID to link with environmental data
 
 dat_files <- list.files("data/ecoregion_environment/")#get list of GLORYS-12 environmental data files 
 
 out1 <- list()
-for(i in 1:length(dat_files)){
+for(i in 1:length(dat_files)){#loop to create a giant data frame with all environmental measurements for all ecoregions
   #Filter datasets to relevant sppsites and years
   x <- read_csv(paste("data/ecoregion_environment/", dat_files[i], sep = ""))#read in temperature data
   x$year <- year(x$time)#extract year
@@ -36,10 +30,9 @@ for(i in 1:length(dat_files)){
   out1[[i]] <- y
 }
 df1 <- bind_rows(out1)
-df1 <- filter(df1, PROVINCE != "NA")
 
-#Create new dataframe with only PRE-BREEDING season data
-df.pb <- df1 %>% 
+#Create new dataframe with mean conditions during the PRE-BREEDING season
+df.pb <- df1 %>% #months used in filtering are justified on the basis of resident bird species breeding phenology, see table S2 in supplement
   filter(case_when(PROVINCE == "Arctic" ~ month >= 3 & month <= 5,
                    PROVINCE == "Cold Temperate Northeast Pacific" ~ month >= 3 & month <= 5,
                    PROVINCE == "Cold Temperate Northwest Pacific" ~ month >= 3 & month <= 5,
@@ -51,6 +44,7 @@ df.pb <- df1 %>%
   summarise(temp = mean(thetao), strat = mean(PEA), chl = mean(chl)) %>% 
   as.data.frame()#compute seasonal mean values per ecoregion
 out <- list() 
+
 for(i in levels(df.pb$ECOREGION)) {#compute scales values
   d <- filter(df.pb, ECOREGION == i) %>% # For each time series
     mutate(st.temp = scale(temp), # Compute scaled temperature
@@ -61,8 +55,8 @@ for(i in levels(df.pb$ECOREGION)) {#compute scales values
 df.pb <- bind_rows(out) # Bind the elements of the list back into a data frame
 df.pb$yearno <- df.pb$year-min(df.pb$year)#add year index
 
-#Create new dataframe with only BREEDING season data
-df.b <- df1 %>% 
+#Create new dataframe with mean conditions during the BREEDING season
+df.b <- df1 %>% #months used in filtering are justified on the basis of resident bird species breeding phenology, see table S2 in supplement
   filter(case_when(PROVINCE == "Arctic"~ month >= 6 & month < 9,
                    PROVINCE == "Cold Temperate Northeast Pacific" ~ month >= 6 & month <= 9,
                    PROVINCE == "Cold Temperate Northwest Pacific" ~ month >= 6 & month <= 8,
@@ -71,7 +65,7 @@ df.b <- df1 %>%
                    PROVINCE == "Hawaii" ~ month %in% c(1:5, 12),
                    PROVINCE == "Northern European Seas" ~ month >= 5 & month <= 8,))
 
-df.b.h <- filter(df.b, PROVINCE == "Hawaii")#group Hawaii December with the following year
+df.b.h <- filter(df.b, PROVINCE == "Hawaii")#group Hawaii December with the following year as birds breed during the boreal winter months
 for(j in 1:nrow(df.b.h)){
   if(df.b.h$month[j]>10){
     df.b.h$year[j] <- df.b.h$year[j]+1
@@ -84,6 +78,7 @@ df.b <- df.b %>%
   summarise(temp = mean(thetao), strat = mean(PEA), chl = mean(chl)) %>% 
   as.data.frame()#compute seasonal mean values per ecoregion
 out <- list() 
+
 for(i in levels(df.b$ECOREGION)) {#compute scales values
   d <- filter(df.b, ECOREGION == i) %>% # For each time series
     mutate(st.temp = scale(temp), # Compute scaled temperature
@@ -93,29 +88,30 @@ for(i in levels(df.b$ECOREGION)) {#compute scales values
 }
 df.b <- bind_rows(out) # Bind the elements of the list back into a data frame
 df.b$yearno <- df.b$year-min(df.b$year)#add year index
-
-#Create color palette
-cols <- c("#14c4ac", "#fc944c", "#8c54fc", "#fc94e4", "#7cdc54", "#fcdc54", "#cc9c44")
 #====
 
 #MODEL ENVIRONMENTAL TRENDS
 #====
-#Pre-Breeding Season
-#temperature
+#Create generalized linear mixed effects (hierarchical) models for long-term trends in mixed layer temperature, water column stratification, and chlorophyll-a content for each northern hemisphere ecosystem during the pre-breeding and breeding seasons. 
+
+#MODEL PRE-BREEDING SEASON ENVIRONMENTAL TRENDS
+#Mixed layer temperature
 pb.temp.trends <- lme(st.temp ~ yearno + PROVINCE + yearno:PROVINCE,
                 random = ~yearno|ECOREGION, # Allow random slopes by time series
                 control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                 method = "ML",
                 data = df.pb)
 saveRDS(pb.temp.trends, file = "output/pb.temp.trends.rds")#save model
-#stratification
+
+#Water column stratification
 pb.strat.trends <- lme(st.strat ~ yearno + PROVINCE + yearno:PROVINCE,
                      random = ~yearno|ECOREGION, # Allow random slopes by time series
                      control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                      method = "ML",
                      data = df.pb)
 saveRDS(pb.strat.trends, file = "output/pb.strat.trends.rds")#save model
-#chlorophyll
+
+#Chlorophyll-a content
 pb.chl.trends <- lme(st.chl ~ yearno + PROVINCE + yearno:PROVINCE,
                      random = ~yearno|ECOREGION, # Allow random slopes by time series
                      control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
@@ -123,32 +119,38 @@ pb.chl.trends <- lme(st.chl ~ yearno + PROVINCE + yearno:PROVINCE,
                      data = df.pb)
 saveRDS(pb.chl.trends, file = "output/pb.chl.trends.rds")#save model
 
-#full model summary
-tab_model(pb.temp.trends)
-tab_model(pb.strat.trends)
-tab_model(pb.chl.trends)
+#Create full model summaries for pre-breeding trends. HTML tables are included as supplementary tables S5-S8
+tab_model(pb.temp.trends)#S5
+tidy(emtrends(pb.temp.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #S6
+  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+  kable_classic()
+tab_model(pb.strat.trends)#S7
+tidy(emtrends(pb.strat.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #S8
+  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+  kable_classic()
+tab_model(pb.chl.trends)#Not included in published data
+tidy(emtrends(pb.chl.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #Not included in published data
+  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+  kable_classic()
 
-#provincial effects
-emtrends(pb.temp.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends
-emtrends(pb.strat.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends
-emtrends(pb.chl.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends
-
-#Breeding Season
-#temperature
+#MODEL BREEDING SEASON ENVIRONMENTAL TRENDS
+#Mixed layer temperature
 b.temp.trends <- lme(st.temp ~ yearno + PROVINCE + yearno:PROVINCE,
                       random = ~yearno|ECOREGION, # Allow random slopes by time series
                       control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                       method = "ML",
                       data = df.b)
 saveRDS(b.temp.trends, file = "output/b.temp.trends.rds")#save model
-#stratification
+
+#Water column stratification
 b.strat.trends <- lme(st.strat ~ yearno + PROVINCE + yearno:PROVINCE,
                        random = ~yearno|ECOREGION, # Allow random slopes by time series
                        control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                        method = "ML",
                        data = df.b)
 saveRDS(b.strat.trends, file = "output/b.strat.trends.rds")#save model
-#chlorophyll
+
+#Chlorophyll-a content
 b.chl.trends <- lme(st.chl ~ yearno + PROVINCE + yearno:PROVINCE,
                      random = ~yearno|ECOREGION, # Allow random slopes by time series
                      control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
@@ -156,106 +158,22 @@ b.chl.trends <- lme(st.chl ~ yearno + PROVINCE + yearno:PROVINCE,
                      data = df.b)
 saveRDS(b.chl.trends, file = "output/b.chl.trends.rds")#save model
 
-#full model summary
-tab_model(b.temp.trends)
-tab_model(b.strat.trends)
-tab_model(b.chl.trends)
-
-#provincial effects
-emtrends(b.temp.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends
-emtrends(b.strat.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends
-emtrends(b.chl.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends
+#Create full model summaries for pre-breeding trends. HTML tables are included as supplementary tables S9-12
+tab_model(b.temp.trends)#S9
+tidy(emtrends(b.temp.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #S10
+  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+  kable_classic()
+tab_model(b.strat.trends)#S11
+tidy(emtrends(b.strat.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #S12
+  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+  kable_classic()
+tab_model(b.chl.trends)#Not included in published data
+tidy(emtrends(b.chl.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #Not included in published data
+  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+  kable_classic()
 #====
 
-#PLOTTING ENVIRONMENT TRENDS
-#====
-#generate simulated data for plotting
-ff.pt <- pltmm(pb.temp.trends, df.pb)
-ff.ps <- pltmm(pb.strat.trends, df.pb)
-ff.pc <- pltmm(pb.chl.trends, df.b)
-ff.bt <- pltmm(b.temp.trends, df.b)
-ff.bs <- pltmm(b.strat.trends, df.b)
-ff.bc <- pltmm(b.chl.trends, df.b)
-
-#generate subplots
-pt <- ggplot(data = ff.pt) + 
-  geom_ribbon(aes(x = yearno + 1993, ymin = se.lw, ymax = se.hi, fill = PROVINCE), alpha = 0.15) + 
-  geom_line(aes(x = yearno + 1993, y = y, color = PROVINCE), size = 1) + 
-  geom_hline(aes(yintercept = 0), linetype = "dashed", color = "black") + 
-  labs(x = "Year", y = "Scaled Mixed Layer Temperature", title = "Pre-Breeding Season") + 
-  lims(y = c(-1.5,1.5)) + 
-  scale_color_manual(values = cols) + 
-  scale_fill_manual(values = cols) + 
-  theme_classic() + 
-  theme(text = element_text(size = 15, family = "Helvetica"),
-        legend.position = "none", plot.margin = unit(c(0,.5,0,.5), "cm"))
-
-ps <- ggplot(data = ff.ps) + 
-  geom_ribbon(aes(x = yearno + 1993, ymin = se.lw, ymax = se.hi, fill = PROVINCE), alpha = 0.15) + 
-  geom_line(aes(x = yearno + 1993, y = y, color = PROVINCE), size = 1) + 
-  geom_hline(aes(yintercept = 0), linetype = "dashed", color = "black") + 
-  labs(x = "Year", y = "Scaled Stratification (PEA)") + 
-  lims(y = c(-1.5,1.5)) + 
-  scale_color_manual(values = cols) + 
-  scale_fill_manual(values = cols) + 
-  theme_classic() + 
-  theme(text = element_text(size = 15, family = "Helvetica"),
-        legend.position = "none", plot.margin = unit(c(0,.5,0,.5), "cm"))
-
-pc <- ggplot(data = ff.pc) + 
-  geom_ribbon(aes(x = yearno + 1993, ymin = se.lw, ymax = se.hi, fill = PROVINCE), alpha = 0.15) + 
-  geom_line(aes(x = yearno + 1993, y = y, color = PROVINCE), size = 1) + 
-  geom_hline(aes(yintercept = 0), linetype = "dashed", color = "black") + 
-  labs(x = "Year", y = "Scaled Mixed Layer Chlorophyll Content") + 
-  lims(y = c(-1.5,1.5)) + 
-  scale_color_manual(values = cols) + 
-  scale_fill_manual(values = cols) + 
-  theme_classic() + 
-  theme(text = element_text(size = 15, family = "Helvetica"),
-        legend.position = "none", plot.margin = unit(c(0,.5,0,.5), "cm"))
-
-bt <- ggplot(data = ff.bt) + 
-  geom_ribbon(aes(x = yearno + 1993, ymin = se.lw, ymax = se.hi, fill = PROVINCE), alpha = 0.15) + 
-  geom_line(aes(x = yearno + 1993, y = y, color = PROVINCE), size = 1) + 
-  geom_hline(aes(yintercept = 0), linetype = "dashed", color = "black") + 
-  labs(x = "Year", y = "", title = "Breeding Season") + 
-  lims(y = c(-1.5,1.5)) + 
-  scale_color_manual(values = cols) + 
-  scale_fill_manual(values = cols) + 
-  theme_classic() + 
-  theme(text = element_text(size = 15, family = "Helvetica"),
-        legend.position = "none", plot.margin = unit(c(0,.5,0,.5), "cm"))
-
-bs <- ggplot(data = ff.bs) + 
-  geom_ribbon(aes(x = yearno + 1993, ymin = se.lw, ymax = se.hi, fill = PROVINCE), alpha = 0.15) + 
-  geom_line(aes(x = yearno + 1993, y = y, color = PROVINCE), size = 1) + 
-  geom_hline(aes(yintercept = 0), linetype = "dashed", color = "black") + 
-  labs(x = "Year", y = "") + 
-  lims(y = c(-1.5,1.5)) + 
-  scale_color_manual(values = cols) + 
-  scale_fill_manual(values = cols) + 
-  theme_classic() + 
-  theme(text = element_text(size = 15, family = "Helvetica"),
-        legend.position = "none", plot.margin = unit(c(0,.5,0,.5), "cm"))
-
-bc <- ggplot(data = ff.bc) + 
-  geom_ribbon(aes(x = yearno + 1993, ymin = se.lw, ymax = se.hi, fill = PROVINCE), alpha = 0.15) + 
-  geom_line(aes(x = yearno + 1993, y = y, color = PROVINCE), size = 1) + 
-  geom_hline(aes(yintercept = 0), linetype = "dashed", color = "black") + 
-  labs(x = "Year", y = "") + 
-  lims(y = c(-1.5,1.5)) + 
-  scale_color_manual(values = cols) + 
-  scale_fill_manual(values = cols) + 
-  theme_classic() + 
-  theme(text = element_text(size = 15, family = "Helvetica"),
-        legend.position = "none", plot.margin = unit(c(0,.5,0,.5), "cm"))
-
-#MERGE & SAVE ENVIRONMENTAL TREND PLOT
-#====
-#plot <- ggarrange(pt, bt, ps, bs, pc, bc, ncol = 2, nrow = 3)
-plot <- ggarrange(pt, bt, ps, bs, ncol = 2, nrow = 2)#removed chlorophyll
-ggsave(filename = "figures/env.trends.jpg", plot = plot, width = 12, height = 7)
-#====
+#Go to figure_environmental_trends
 
 
 #GENERATE SUPPLEMENTARY ENVIRONMENTAL TREND FIGURES
@@ -284,7 +202,7 @@ abline(v =0)
 saveRDS(n.trends, file = "output/n.trends.env.rds")#save model
 #====
 
-#MODEL PRIOVINCIAL BREEDING SUCCESS
+#MODEL BREEDING SUCCESS TRENDS
 #====
 n.trends <- lme(stbs ~ yearno + PROVINCE + yearno:PROVINCE,
                      random = ~yearno|sppsite, # Allow random slopes by time series
