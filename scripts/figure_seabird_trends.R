@@ -50,3 +50,13 @@ ggsave(filename = "figures/seabird.trends.jpg", plot = plot, width = 9, height =
 #PLOT TIME SERIES PER COLONY WITH STANDARD ERROR
 #====
 #generate a plot showing seabird breeding success grouped by site (colony) with error; figure included as supplemental Figure S3. 
+ggplot(filter(dat), aes(year, bs, color = spp)) + 
+  geom_point() + 
+  geom_smooth(method = 'lm') + 
+  facet_wrap(vars(PROVINCE ,site), ncol = 4) + 
+  theme_bw() + 
+  theme(text = element_text(size = 20)) + 
+  labs(x = "Year", y = "Breeding Success") + 
+  guides(color = "none")
+ggsave("figures/supplementary/raw_sppsite_trends.jpg", width = 15, height = 20)
+#====

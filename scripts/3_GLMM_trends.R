@@ -54,6 +54,7 @@ for(i in levels(df.pb$ECOREGION)) {#compute scales values
 }
 df.pb <- bind_rows(out) # Bind the elements of the list back into a data frame
 df.pb$yearno <- df.pb$year-min(df.pb$year)#add year index
+saveRDS(df.pb, file = "data/df.pb.rds")#save file
 
 #Create new dataframe with mean conditions during the BREEDING season
 df.b <- df1 %>% #months used in filtering are justified on the basis of resident bird species breeding phenology, see table S2 in supplement
@@ -88,6 +89,7 @@ for(i in levels(df.b$ECOREGION)) {#compute scales values
 }
 df.b <- bind_rows(out) # Bind the elements of the list back into a data frame
 df.b$yearno <- df.b$year-min(df.b$year)#add year index
+saveRDS(df.b, file= "data/df.b.rds")#save file
 #====
 
 #MODEL ENVIRONMENTAL TRENDS
