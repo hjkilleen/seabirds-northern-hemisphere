@@ -175,7 +175,7 @@ tidy(emtrends(b.chl.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.
   kable_classic()
 #====
 
-#Go to figure_environmental_trends
+#Corresponding figure produced in figure_environmental_trends
 
 
 
@@ -199,4 +199,6 @@ tidy(emtrends(n.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int 
   kable_classic()
 #====
 
-#Go to figure_seabird_trends
+#Corresponding figure produced in figure_seabird_trends
+
+#Go to 4_GLMM_biophysical

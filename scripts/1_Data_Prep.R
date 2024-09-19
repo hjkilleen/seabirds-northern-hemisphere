@@ -124,8 +124,10 @@
 								nyear = mean(nyear)) %>% # Get the number of data points
 			as.data.frame() # Make it a data frame
 		saveRDS(xy, file = "data/xy.Rda")
-
+#=========
 		
+#Produce study map in figure_map
+
 # Go to 2_Data_Merge.R
 
 		
