@@ -176,95 +176,25 @@ tidy(emtrends(b.chl.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.
 #Go to figure_environmental_trends
 
 
-#GENERATE SUPPLEMENTARY ENVIRONMENTAL TREND FIGURES
-#====
-x <-as.data.frame(ranef(b.strat.trends))
-x <- arrange(x, yearno)
-x$ECOREGION <- row.names(x)
-x <- left_join(x, unique(dplyr::select(dat, ECOREGION, PROVINCE)))
-x <- droplevels(x)
-x$color <- rep(NA, nrow(x))
-
-# Dotplot: Grouped Sorted and Colored
-x$color[x$PROVINCE=="Arctic"] <- "#14c4ac"
-x$color[x$PROVINCE=="Cold Temperate Northwest Atlantic"] <- "#8c54fc"
-x$color[x$PROVINCE=="Cold Temperate Northeast Pacific"] <- "#fc944c"
-x$color[x$PROVINCE=="Warm Temperate Northeast Pacific"] <- "#cc9c44"
-x$color[x$PROVINCE=="Northern European Seas"] <- "#fcdc54"
-x$color[x$PROVINCE=="Cold Temperate Northwest Pacific"] <- "#fc94e4"
-x$color[x$PROVINCE=="Hawaii"] <- "#7cdc54"
-
-dotchart(x$yearno,labels=x$ECOREGION,groups= x$PROVINCE,
-         main="Ecoregion Level Stratification Trends",
-         xlab="PEA/year", pt.cex = 2, pch = 16,gcolor="black", color=x$color)
-abline(v =0)
-
-saveRDS(n.trends, file = "output/n.trends.env.rds")#save model
-#====
 
 #MODEL BREEDING SUCCESS TRENDS
 #====
+#Create generalized linear mixed effects (hierarchical) model for long-term trends in seabird breeding success for each northern hemisphere ecosystem. 
+
 n.trends <- lme(stbs ~ yearno + PROVINCE + yearno:PROVINCE,
                      random = ~yearno|sppsite, # Allow random slopes by time series
                      correlation = corCAR1(form = ~ yearno|sppsite), # Incorporate temporal autocorrelation in discontinuous time series, by time series
                      control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                      method = "ML",
-                     data = filter(dat, PROVINCE != "Hawaii"))
+                     data = dat)
 
 saveRDS(n.trends, file = "output/n.trends.rds")#save model
 
-#full model summary
-tab_model(n.trends)
+#Create full model tables for seabird breeding success trends. Code generated HTML tables that are included as supplementary Tables S13-14
+tab_model(n.trends)#S13
+tidy(emtrends(n.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #S14
+  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+  kable_classic()
 #====
 
-#PLOT BREEDING SUCCESS TRENDS
-#====
-values <- c("#14c4ac", "#fc944c", "#8c54fc", "#fc94e4", "#7cdc54", "#fcdc54", "#cc9c44")
-
-ff <- pltmm(n.trends, dat)#generate model simulated data
-
-ggplot(data = dat, aes(x = yearno + min(dat$year), y = stbs, group = sppsite)) +
-  geom_smooth(data = dat, aes(x = yearno + min(year), y = stbs, group = sppsite, colour = PROVINCE), linetype = "dashed",
-              method = "lm", se = FALSE,
-              lwd = 1) +
-  geom_ribbon(data = ff, aes(x = yearno + min(dat$year), ymin = se.lw, ymax = se.hi, fill = PROVINCE), alpha = 0.45, inherit.aes = FALSE) +
-  geom_line(data = ff, aes(x = yearno + min(dat$year), y = y, colour = PROVINCE), inherit.aes = FALSE) +
-  geom_hline(aes(yintercept = 0), linetype = "dashed") + 
-  labs(x = "Year", 
-       y = "Standardized breeding success \n  (± standard error)") +
-  theme_bw() +
-  theme(
-    axis.text = element_text(size = 10,family="Helvetica"), 
-    axis.title = element_text(size = 10,family="Helvetica"),
-    axis.title.x = element_text(vjust = -2,family="Helvetica",size=12),
-    axis.title.y = element_text(vjust = 2,family="Helvetica",size=12), 
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    legend.position="top",
-    legend.text=element_text(size=10,family="Helvetica"),
-    legend.title=element_text(size=10,family="Helvetica"))+
-  scale_fill_manual(values=values)+
-  scale_color_manual(values=values)+
-  facet_wrap(vars(PROVINCE), ncol = 3)
-
-x <-as.data.frame(ranef(n.trends))
-x <- arrange(x, yearno)
-x$sppsite <- row.names(x)
-x <- left_join(x, unique(dplyr::select(dat, sppsite, PROVINCE)))
-x <- droplevels(x)
-x$color <- rep(NA, nrow(x))
-
-# Dotplot: Grouped Sorted and Colored
-x$color[x$PROVINCE=="Arctic"] <- "#14c4ac"
-x$color[x$PROVINCE=="Cold Temperate Northwest Atlantic"] <- "#8c54fc"
-x$color[x$PROVINCE=="Cold Temperate Northeast Pacific"] <- "#fc944c"
-x$color[x$PROVINCE=="Warm Temperate Northeast Pacific"] <- "#cc9c44"
-x$color[x$PROVINCE=="Northern European Seas"] <- "#fcdc54"
-x$color[x$PROVINCE=="Cold Temperate Northwest Pacific"] <- "#fc94e4"
-x$color[x$PROVINCE=="Hawaii"] <- "#7cdc54"
-
-dotchart(x$yearno,labels=x$ECOREGION,groups= x$PROVINCE,
-         main="Ecoregion Level Stratification Trends",
-         xlab="PEA/year", pt.cex = 2, pch = 16,gcolor="black", color=x$color)
-abline(v =0)
-#====
+#Go to figure_seabird_trends

@@ -1,4 +1,4 @@
-#Script to generate Figure 3 in published paper, visualizing linear trends in modeled estimates of mixed layer temperature and stratification across seven northern hemisphere ecosystems. 
+#Script to generate Figure 2 in published paper, visualizing linear trends in modeled estimates of mixed layer temperature and stratification across seven northern hemisphere ecosystems. 
 #Written by Helen Killeen
 
 # Tue Sep 17 15:21:49 2024 ------------------------------
