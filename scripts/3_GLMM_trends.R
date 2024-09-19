@@ -4,7 +4,7 @@
 #Note that while chlorophyll-a content trends are calculated in this script, these trends are not included in the published manuscript
 #Supplementary tables for models are printed in HTML format using the kableExtra() package
 
-# Tue Sep 17 14:23:33 2024 ------------------------------
+# Thu Sep 19 13:54:09 2024 ------------------------------
 
 #LIBRARIES & SOURCES
 #====
@@ -201,4 +201,4 @@ tidy(emtrends(n.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int 
 
 #Corresponding figure produced in figure_seabird_trends
 
-#Go to 4_GLMM_biophysical
+#Go to 4_GLMM_Biophysical

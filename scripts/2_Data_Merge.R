@@ -79,6 +79,15 @@ y <- y %>%
 #save data frame
   write_csv(as.data.frame(as.matrix(y)), file = paste("data/sppsite_environment/", sppsite_list$sppsite[i], ".csv", sep = ""))
 }
+
+#bind all breeding success/environment time series into a single data frame
+files  <- list.files("data/sppsite_environment/", full.names = TRUE)
+tables <- lapply(files, read_csv)
+combined.df <- do.call(rbind , tables)
+combined.df <- combined.df %>% mutate_if(is.character, as.factor)#convert new variables to factors
+
+#save dataframe to output for plotting
+saveRDS(combined.df, "data/combined.df.rds")
 #====
 
 #Go to 3_GLMM_trends
