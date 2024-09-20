@@ -31,6 +31,7 @@
 	library(ggthemes)
 	#library(tmap)  
   library(viridis)
+  library(knitr)
   library(kableExtra)
   library(ggpubr)
   library(sjPlot)
