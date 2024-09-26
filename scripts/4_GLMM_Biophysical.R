@@ -331,14 +331,14 @@ saveRDS(haw.pb.strat, file = "output/biophysical_models/haw.pb.strat.rds")#save 
 
 #fit breeding season models for Hawaii time series
 #temperature
-haw.b.temp <- lme(d.stbs ~ d.stb_strat,
+haw.b.temp <- lme(d.stbs ~ d.stb_temp,
              random = ~ 1|sppsite, # Allow random intercepts by time series
              control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
              method = "REML",
              data = filter(combined.df, PROVINCE == "Hawaii"))
 
 tab_model(haw.b.temp)#Table S28.1
-saveRDS(haw.b.temp, file = "output/biophysical models by province/haw.b.temp.rds")#save model output
+saveRDS(haw.b.temp, file = "output/biophysical_models/haw.b.temp.rds")#save model output
 
 #stratification
 haw.b.strat <- lme(d.stbs ~ d.stb_strat,
@@ -348,7 +348,9 @@ haw.b.strat <- lme(d.stbs ~ d.stb_strat,
                   data = filter(combined.df, PROVINCE == "Hawaii"))
 
 tab_model(haw.b.strat)#Table S28.2
-saveRDS(haw.b.strat, file = "output/biophysical models by province/haw.b.strat.rds")#save model output
+saveRDS(haw.b.strat, file = "output/biophysical_models/haw.b.strat.rds")#save model output
 #====
 
 #Go to table_biophysicalOutput for summary table included in manuscript
+
+#Go to 5_Prey_Portfolio_Diversity
