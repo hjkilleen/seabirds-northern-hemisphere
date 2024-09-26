@@ -26,9 +26,9 @@ ff <- pltmm(n.trends, dat)
 plot <- ggplot(data = dat, aes(x = yearno + min(dat$year), y = stbs, group = sppsite)) +
   geom_smooth(data = dat, aes(x = yearno + min(year), y = stbs, group = sppsite, colour = PROVINCE), linetype = "dashed",
               method = "lm", se = FALSE,
-              lwd = 1) +
+              lwd = .5) +
   geom_ribbon(data = ff, aes(x = yearno + min(dat$year), ymin = se.lw, ymax = se.hi, fill = PROVINCE), alpha = 0.45, inherit.aes = FALSE) +
-  geom_line(data = ff, aes(x = yearno + min(dat$year), y = y, colour = PROVINCE), inherit.aes = FALSE) +
+  geom_line(data = ff, aes(x = yearno + min(dat$year), y = y, colour = PROVINCE), lwd = 1, inherit.aes = FALSE) +
   geom_hline(aes(yintercept = 0), linetype = "dashed") + 
   labs(x = "Year", 
        y = "Standardized breeding success \n  (± standard error)") +
