@@ -1,0 +1,73 @@
+value,category,prey_code
+Ammodytes personatus,Ammodytidae,Ammodytidae
+Ammodytes marinus,Ammodytidae,Ammodytidae
+Ammodytes sp.,Ammodytidae,Ammodytidae
+Ammodytidae,Ammodytidae,Ammodytidae
+Ammodytes hexapterus,Ammodytidae,Ammodytidae
+Ammodytes stobianus,Ammodytidae,Ammodytidae
+Amphipoda,Amphipoda,Crustacean zooplankton
+Hyperia galba,Amphipoda,Crustacean zooplankton
+Neocalanus cristatus,Copepoda,Crustacean zooplankton
+Neocalanus sp.,Copepoda,Crustacean zooplankton
+Calanus sp.,Copepoda,Crustacean zooplankton
+Copepoda,Copepoda,Crustacean zooplankton
+Euphausiidae,Euphausiidae,Crustacean zooplankton
+Euphausia pacifica,Euphausiidae,Crustacean zooplankton
+Thysanoessa spinifera,Euphausiidae,Crustacean zooplankton
+Cottidae,Cottidae,Demersal fish
+Triglops sp.,Cottidae,Demersal fish
+Gadus chalcogrammus,Gadidae,Demersal fish
+Boreogadus saida,Gadidae,Demersal fish
+Gadidae,Gadidae,Demersal fish
+Urophycis tenuis,Gadidae,Demersal fish
+Gadus morhua larvae,Gadidae,Demersal fish
+Pollachius virens,Gadidae,Demersal fish
+Melanogrammus aeglefinus,Gadidae,Demersal fish
+Gadus morhua adults,Gadidae,Demersal fish
+Hexagrammidae,Hexagrammidae,Demersal fish
+Citharichthys stigmaeus,Paralichthyidae,Demersal fish
+Pholis gunnelus,Pholidae,Demersal fish
+Pleuronectiformes,Pleuronectiformes,Demersal fish
+Sebastes sp.,Scorpaenidae,Demersal fish
+Myctophidae,Myctophidae,Mesopelagic fish
+Stenobrachius leucopsarus,Myctophidae,Mesopelagic fish
+Benthosema glaciale,Myctophidae,Mesopelagic fish
+Stenobrachius sp.,Myctophidae,Mesopelagic fish
+Protomyctophum arcticum,Myctophidae,Mesopelagic fish
+Sebastes fasciatus,Scorpaenidae,Nearshore fish
+Scorpaenidae,Scorpaenidae,Nearshore fish
+Peprilus triacanthus,Stromateidae,Nearshore fish
+Aves,Aves,Other
+Crustacea,Crustacea,Other
+Crangonidae,Crustacea,Other
+Fishery discards,Fishery discards,Other
+Gelatinous zooplankton,Gelatinous,Other
+Kleptoparasitism,Kleptoparasitism,Other
+Polychaeta,Polychaeta,Other
+Polyplacophora,Polyplacophora,Other
+Scorpaeniformes,Scorpaenidae,Other
+Teleostei,Unid Fish,Other
+larval fish,Unid Fish,Other
+Invertebrates,Unid Invertebrate,Other
+Highly variable,Variable,Other
+Varied,Variable,Other
+Other,Variable,Other
+Zooplankton,Zooplankton,Other
+Sprattus sp.,Clupeidae,Pelagic schooling fish
+Clupea harengus,Clupeidae,Pelagic schooling fish
+Clupeidae,Clupeidae,Pelagic schooling fish
+Clupea pallasii,Clupeidae,Pelagic schooling fish
+Sprattus sprattus,Clupeidae,Pelagic schooling fish
+Engraulis mordax,Engraulidae,Pelagic schooling fish
+Engraulidae,Engraulidae,Pelagic schooling fish
+Exocoetidae,Exocoetidae,Pelagic schooling fish
+Mullidae,Mullidae,Pelagic schooling fish
+Mallotus villosus,Osmeridae,Pelagic schooling fish
+Osmerus mordax,Osmeridae,Pelagic schooling fish
+Osmeridae,Osmeridae,Pelagic schooling fish
+Sardinops sagax,Sardinops,Pelagic schooling fish
+Sardinops melanosticta,Sardinops,Pelagic schooling fish
+Cololabis saira,Scomberesocidae,Pelagic schooling fish
+Scomber scombrus,Scomberidae,Pelagic schooling fish
+Scomber japonicus,Scomberidae,Pelagic schooling fish
+Cephalopoda,Cephalopoda,Squid
