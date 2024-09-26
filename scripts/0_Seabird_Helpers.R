@@ -18,6 +18,7 @@
 	#library(mblm)
   library(astsa)
   library(emmeans)
+  library(vegan)
 
 	library(sf)
 	library(raster)
@@ -39,7 +40,6 @@
 	#library(VoCC) # devtools::install_github("JorGarMol/VoCC", dependencies = TRUE, build_vignettes = TRUE)
 	#library(heatwaveR)
 	#library(ncdf4)
-
 
 # Function to rearrange factor levels ------------------------------------------
 

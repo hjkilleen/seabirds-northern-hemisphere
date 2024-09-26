@@ -9,7 +9,7 @@ source(file = "scripts/0_Seabird_Helpers.R")#load functions
 
 dat <- readRDS("data/dat.Rda")#load breeding success data
 
-Nfilter <- readxl::read_xlsx("data/northSeasonalFilter.xlsx")#get seasonal filtering metadata, this table is used to sort out which months of the year are essential for environmental averaging of the pre-breeding and breeding seasons. See Table S2 in the Supplemental Materials. 
+Nfilter <- readxl::read_xlsx("data/metadata/northSeasonalFilter.xlsx")#get seasonal filtering metadata, this table is used to sort out which months of the year are essential for environmental averaging of the pre-breeding and breeding seasons. See Table S2 in the Supplemental Materials. 
 #====
 
 #SETUP
@@ -17,7 +17,7 @@ Nfilter <- readxl::read_xlsx("data/northSeasonalFilter.xlsx")#get seasonal filte
 sppsite_list <- distinct(dat, sppsite, ECOREGION)#get full list of sppsites
 sppsite_list$file <- gsub('/', '', paste(gsub(" ", "_", sppsite_list$ECOREGION), "_MEOW.csv", sep = ""))#add a file ID to link with environmental data
 
-dat_files <- list.files("data/ecoregion_environment/")#get list of GLORYS-12 environmental data files 
+dat_files <- list.files("data/raw/ecoregion_environment/")#get list of GLORYS-12 environmental data files 
 #====
 
 #LOOP
@@ -25,7 +25,7 @@ dat_files <- list.files("data/ecoregion_environment/")#get list of GLORYS-12 env
 #Loop to link colony time series with local ecoregional environmental data (mixed layer temperature, water column stratification [PEA], and chlorophyll-a content [not used in this analysis]) extracted from the GLORYS-12 reanalysis model
 for(i in 1:nrow(sppsite_list)){
   #Filter datasets to relevant sppsites and years
-  x <- read_csv(paste("data/ecoregion_environment/", sppsite_list$file[i], sep = ""))#read in temperature data
+  x <- read_csv(paste("data/raw/ecoregion_environment/", sppsite_list$file[i], sep = ""))#read in temperature data
   x$year <- year(x$time)#extract year
   x$month <- month(x$time)#extract month
   

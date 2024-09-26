@@ -9,9 +9,9 @@
 	source(file = "scripts/0_Seabird_Helpers.R")
 
 
-# Load the data, combine and prep ----------------------------------------------
+# Load breeding success data, combine and prep ----------------------------------------------
 
-	dat1 <- read_xlsx("data/data_breedingsuccess_north.xlsx") %>% #load northern hemisphere subset of the Global Breeding Success Database
+	dat1 <- read_xlsx("data/raw/data_breedingsuccess_north.xlsx") %>% #load northern hemisphere subset of the Global Breeding Success Database
 		rename(year_s = year_s_hemi,# Rename variables so that they're slightly easier to deal with
 		       year_of_record = year,
 		       year = year_curated,
@@ -42,7 +42,7 @@
 		sum(duplicated(dat1[, -c(1:2)])) # Check to see whether there are any duplicates: none found
 		
 	# Merge in the trophic levels
-		dat2 <- left_join(dat1, read.csv("data/Lookup_table.csv", stringsAsFactors = TRUE),
+		dat2 <- left_join(dat1, read.csv("data/metadata/Lookup_table.csv", stringsAsFactors = TRUE),
 											by = c("spp" = "Species")) %>%  # Merge Biome and TL into dat
 			rename(Depth = Foraging.depth, spp.name = Scientific.name, TL = Trophic.level)
 		  dat2$Hemisphere <- as.factor(dat2$Hemisphere)
@@ -55,7 +55,7 @@
 	# Merge in ecoregional and ecosystem (province) classifications
 			#Get Marine Ecoregions of the World shapefiles
 			# Load and rasterise shape file
-			meow <- st_read("data/MEOW/meow_ecos.shp") # Read in the shape file (polygons) downloaded from https://www.worldwildlife.org/publications/marine-ecoregions-of-the-world-a-bioregionalization-of-coastal-and-shelf-areas
+			meow <- st_read("data/metadata/MEOW/meow_ecos.shp") # Read in the shape file (polygons) downloaded from https://www.worldwildlife.org/publications/marine-ecoregions-of-the-world-a-bioregionalization-of-coastal-and-shelf-areas
 			head(meow) # What's in there? A spatial data frame with some descriptors and geometries
 			meow %>% group_by(ECOREGION) %>% summarise(no = n_distinct(ECO_CODE_X)) %>% as.data.frame() # Each LME (by name) has a unique LME_NUMBER - good
 			r <- raster(res = 0.25) # An empty 0.25° raster...you can make it finer, if you like
@@ -124,12 +124,39 @@
 								nyear = mean(nyear)) %>% # Get the number of data points
 			as.data.frame() # Make it a data frame
 		saveRDS(xy, file = "data/xy.Rda")
-#=========
+
+# Load and clean up prey record file for analysis and figure generation------------------- 
+		
+		prey.df <- read_xlsx("data/prey_records.xlsx")#load prey records for each seabird colony
+		prey.grp <- read_csv("data/metadata/prey_groupings.csv")#load prey groupings 
+		
+		prey.df <- prey.df[,c(1,5,6,7, 9:11)]#retain only columns needed for analysis, the rest are contained in the file for reference
+		names(prey.df) <- c("site", "ecoregion", "province", "spp", "prey.1", "prey.2", "prey.3")
+		prey.df$sppsite <- paste(prey.df$spp, prey.df$site, sep = "_")
+		prey.df <- melt(prey.df, id = c("sppsite", "site", "ecoregion", "province", "spp"))
+		prey.df <- filter(prey.df, !is.na(value), value != "NA")#filter NAs
+		
+		
+		#set up data for proportional predator-prey pairings
+		prey.df2 <- left_join(prey.df, prey.grp)#join in prey groupings
+		prey.df2 <-dcast(prey.df2, sppsite + province~category, length, value.var = 'category') %>% 
+		  group_by(province) %>% 
+		  summarize_if(is.numeric, sum)#number of birds that prey on each group per ecosystem
+		
+		prey.df2$total <- rowSums(prey.df2[,-1])#total number of time series per province
+		prey.df2 <- prey.df2 %>% mutate(across(2:(ncol(prey.df2)-1), ~ .x/total))#get proportion of birds relying on each prey item by ecosystem (i.e., prey use index)
+		prey.df2 <- melt(prey.df2[,-35], id = "province")#reshape to tall format
+		saveRDS(prey.df2, "data/prey.df.proportional.rds")
+		
+		#save raw prey counts without Hawaii, the Med, and Warm Temperature Northeast Pacific
+		prey.df <- filter(prey.df, !province %in% c("Mediterranean Sea", "Hawaii", "Warm Temperate Northeast Pacific"))#filter to only the provinces where we have the most bird time series and exclude NAs
+		
+		prey.df <- left_join(prey.df, prey.grp)#join in prey groupings
+		saveRDS(prey.df, "data/prey.df.rds")
+		
+# Make figures --------------------------------------------------------------------------
 		
 #Produce study map in figure_map
 
 # Go to 2_Data_Merge.R
-
-		
-			
 			
