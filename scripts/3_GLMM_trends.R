@@ -103,6 +103,7 @@ pb.temp.trends <- lme(st.temp ~ yearno + PROVINCE + yearno:PROVINCE,
                 control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                 method = "ML",
                 data = df.pb)
+performance::check_model(pb.temp.trends, check = c("qq", "linearity", "normality"))#looks good for all tests
 saveRDS(pb.temp.trends, file = "output/pb.temp.trends.rds")#save model
 
 #Water column stratification
@@ -111,6 +112,7 @@ pb.strat.trends <- lme(st.strat ~ yearno + PROVINCE + yearno:PROVINCE,
                      control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                      method = "ML",
                      data = df.pb)
+performance::check_model(pb.strat.trends, check = c("qq", "linearity", "normality"))#looks okay for all tests
 saveRDS(pb.strat.trends, file = "output/pb.strat.trends.rds")#save model
 
 #Chlorophyll-a content
@@ -119,20 +121,20 @@ pb.chl.trends <- lme(st.chl ~ yearno + PROVINCE + yearno:PROVINCE,
                      control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                      method = "ML",
                      data = df.pb)
+performance::check_model(pb.chl.trends, check = c("qq", "linearity", "normality"))#looks great for all tests
 saveRDS(pb.chl.trends, file = "output/pb.chl.trends.rds")#save model
-
 #Create full model summaries for pre-breeding trends. HTML tables are included as supplementary tables S5-S8
-tab_model(pb.temp.trends)#S5
-tidy(emtrends(pb.temp.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #S6
-  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+tab_model(pb.temp.trends, show.ci = 0.9)#S5
+tidy(confint(emtrends(pb.temp.trends, pairwise ~ PROVINCE, var = "yearno"), level = 0.9)$emtrends, conf.int = TRUE) %>% #S6
+  kbl(caption = "Using 90% confidence interval", digits = 3) %>% 
   kable_classic()
-tab_model(pb.strat.trends)#S7
-tidy(emtrends(pb.strat.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #S8
-  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+tab_model(pb.strat.trends, show.ci = 0.9)#S7
+tidy(confint(emtrends(pb.strat.trends, pairwise ~ PROVINCE, var = "yearno"), level = 0.9)$emtrends, conf.int = TRUE) %>% #S8
+  kbl(caption = "Using 90% confidence interval", digits = 3) %>% 
   kable_classic()
-tab_model(pb.chl.trends)#Not included in published data
-tidy(emtrends(pb.chl.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #Not included in published data
-  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+tab_model(pb.chl.trends, show.ci = 0.9)#Not included in published data
+tidy(confint(emtrends(pb.chl.trends, pairwise ~ PROVINCE, var = "yearno"), level = 0.9)$emtrends, conf.int = TRUE) %>% #Not included in published data
+  kbl(caption = "Using 90% confidence interval", digits = 3) %>% 
   kable_classic()
 
 #MODEL BREEDING SEASON ENVIRONMENTAL TRENDS
@@ -142,6 +144,7 @@ b.temp.trends <- lme(st.temp ~ yearno + PROVINCE + yearno:PROVINCE,
                       control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                       method = "ML",
                       data = df.b)
+performance::check_model(b.temp.trends, check = c("qq", "linearity", "normality"))#looks great for all tests
 saveRDS(b.temp.trends, file = "output/b.temp.trends.rds")#save model
 
 #Water column stratification
@@ -150,6 +153,7 @@ b.strat.trends <- lme(st.strat ~ yearno + PROVINCE + yearno:PROVINCE,
                        control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                        method = "ML",
                        data = df.b)
+performance::check_model(b.strat.trends, check = c("qq", "linearity", "normality"))#looks okay for all tests, high fitted values have large residuals, similar to pre-breeding season outcome
 saveRDS(b.strat.trends, file = "output/b.strat.trends.rds")#save model
 
 #Chlorophyll-a content
@@ -158,20 +162,21 @@ b.chl.trends <- lme(st.chl ~ yearno + PROVINCE + yearno:PROVINCE,
                      control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                      method = "ML",
                      data = df.b)
+performance::check_model(b.chl.trends, check = c("qq", "linearity", "normality"))#looks okay for all tests
 saveRDS(b.chl.trends, file = "output/b.chl.trends.rds")#save model
 
 #Create full model summaries for pre-breeding trends. HTML tables are included as supplementary tables S9-12
-tab_model(b.temp.trends)#S9
-tidy(emtrends(b.temp.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #S10
-  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+tab_model(b.temp.trends, show.ci = 0.9)#S9
+tidy(confint(emtrends(b.temp.trends, pairwise ~ PROVINCE, var = "yearno"), level = 0.9)$emtrends, conf.int = TRUE) %>% #S10
+  kbl(caption = "Using 90% confidence interval", digits = 3) %>% 
   kable_classic()
-tab_model(b.strat.trends)#S11
-tidy(emtrends(b.strat.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #S12
-  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+tab_model(b.strat.trends, show.ci = 0.9)#S11
+tidy(confint(emtrends(b.strat.trends, pairwise ~ PROVINCE, var = "yearno"), level = 0.9)$emtrends, conf.int = TRUE) %>% #S12
+  kbl(caption = "Using 90% confidence interval", digits = 3) %>% 
   kable_classic()
 tab_model(b.chl.trends)#Not included in published data
 tidy(emtrends(b.chl.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #Not included in published data
-  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+  kbl(caption = "Using 90% confidence interval", digits = 3) %>% 
   kable_classic()
 #====
 
@@ -192,10 +197,13 @@ n.trends <- lme(stbs ~ yearno + PROVINCE + yearno:PROVINCE,
 
 saveRDS(n.trends, file = "output/n.trends.rds")#save model
 
+#Run graphical diagnostic plots
+performance::check_model(n.trends, check = c("qq", "linearity", "normality"))#looks good for all tests
+
 #Create full model tables for seabird breeding success trends. Code generated HTML tables that are included as supplementary Tables S13-14
-tab_model(n.trends)#S13
-tidy(emtrends(n.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.int = TRUE) %>% #S14
-  kbl(caption = "Using 95% confidence interval", digits = 3) %>% 
+tab_model(n.trends, show.ci = 0.9)#S13
+tidy(confint(emtrends(n.trends, pairwise ~ PROVINCE, var = "yearno"), level = 0.9)$emtrends, conf.int = TRUE) %>% #S14
+  kbl(caption = "Using 90% confidence interval", digits = 3) %>% 
   kable_classic()
 #====
 
