@@ -25,7 +25,7 @@ fortify(r.meow)
 
 library(ggnewscale)
 
-jpeg("map.jpg", units="in", width=20, height=12, res=300)
+jpeg("figures/map.jpg", units="in", width=20, height=12, res=300)
 
 ggplot(bathy.f, aes(x = x, y = y)) + 
   coord_quickmap() + 
