@@ -19,6 +19,7 @@
   library(astsa)
   library(emmeans)
   library(vegan)
+  library(performance)
 
 	library(sf)
 	library(raster)
