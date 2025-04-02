@@ -103,7 +103,7 @@ pb.temp.trends <- lme(st.temp ~ yearno + PROVINCE + yearno:PROVINCE,
                 control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                 method = "ML",
                 data = df.pb)
-performance::check_model(pb.temp.trends, check = c("qq", "linearity", "normality"))#looks good for all tests
+check_model(pb.temp.trends, check = c("qq", "linearity", "normality"))#looks good for all tests
 saveRDS(pb.temp.trends, file = "output/pb.temp.trends.rds")#save model
 
 #Water column stratification
@@ -112,7 +112,7 @@ pb.strat.trends <- lme(st.strat ~ yearno + PROVINCE + yearno:PROVINCE,
                      control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                      method = "ML",
                      data = df.pb)
-performance::check_model(pb.strat.trends, check = c("qq", "linearity", "normality"))#looks okay for all tests
+check_model(pb.strat.trends, check = c("qq", "linearity", "normality"))#looks okay for all tests
 saveRDS(pb.strat.trends, file = "output/pb.strat.trends.rds")#save model
 
 #Chlorophyll-a content
@@ -121,7 +121,7 @@ pb.chl.trends <- lme(st.chl ~ yearno + PROVINCE + yearno:PROVINCE,
                      control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                      method = "ML",
                      data = df.pb)
-performance::check_model(pb.chl.trends, check = c("qq", "linearity", "normality"))#looks great for all tests
+check_model(pb.chl.trends, check = c("qq", "linearity", "normality"))#looks great for all tests
 saveRDS(pb.chl.trends, file = "output/pb.chl.trends.rds")#save model
 #Create full model summaries for pre-breeding trends. HTML tables are included as supplementary tables S5-S8
 tab_model(pb.temp.trends, show.ci = 0.9)#S5
@@ -144,7 +144,7 @@ b.temp.trends <- lme(st.temp ~ yearno + PROVINCE + yearno:PROVINCE,
                       control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                       method = "ML",
                       data = df.b)
-performance::check_model(b.temp.trends, check = c("qq", "linearity", "normality"))#looks great for all tests
+check_model(b.temp.trends, check = c("qq", "linearity", "normality"))#looks great for all tests
 saveRDS(b.temp.trends, file = "output/b.temp.trends.rds")#save model
 
 #Water column stratification
@@ -153,7 +153,7 @@ b.strat.trends <- lme(st.strat ~ yearno + PROVINCE + yearno:PROVINCE,
                        control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                        method = "ML",
                        data = df.b)
-performance::check_model(b.strat.trends, check = c("qq", "linearity", "normality"))#looks okay for all tests, high fitted values have large residuals, similar to pre-breeding season outcome
+check_model(b.strat.trends, check = c("qq", "linearity", "normality"))#looks okay for all tests, high fitted values have large residuals, similar to pre-breeding season outcome
 saveRDS(b.strat.trends, file = "output/b.strat.trends.rds")#save model
 
 #Chlorophyll-a content
@@ -162,7 +162,7 @@ b.chl.trends <- lme(st.chl ~ yearno + PROVINCE + yearno:PROVINCE,
                      control = list(maxIter = 10000, niterEM = 10000), # Give it time to converge
                      method = "ML",
                      data = df.b)
-performance::check_model(b.chl.trends, check = c("qq", "linearity", "normality"))#looks okay for all tests
+check_model(b.chl.trends, check = c("qq", "linearity", "normality"))#looks okay for all tests
 saveRDS(b.chl.trends, file = "output/b.chl.trends.rds")#save model
 
 #Create full model summaries for pre-breeding trends. HTML tables are included as supplementary tables S9-12
@@ -198,7 +198,7 @@ n.trends <- lme(stbs ~ yearno + PROVINCE + yearno:PROVINCE,
 saveRDS(n.trends, file = "output/n.trends.rds")#save model
 
 #Run graphical diagnostic plots
-performance::check_model(n.trends, check = c("qq", "linearity", "normality"))#looks good for all tests
+check_model(n.trends, check = c("qq", "linearity", "normality"))#looks good for all tests
 
 #Create full model tables for seabird breeding success trends. Code generated HTML tables that are included as supplementary Tables S13-14
 tab_model(n.trends, show.ci = 0.9)#S13
