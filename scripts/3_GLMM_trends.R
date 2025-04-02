@@ -92,7 +92,7 @@ df.b$yearno <- df.b$year-min(df.b$year)#add year index
 saveRDS(df.b, file= "data/df.b.rds")#save file
 #====
 
-#MODEL ENVIRONMENTAL TRENDS
+#MODEL ENVIRONMENTAL TRENDS (FAMILY ONE IN SUPPLEMENTARY MATERIALS)
 #====
 #Create generalized linear mixed effects (hierarchical) models for long-term trends in mixed layer temperature, water column stratification, and chlorophyll-a content for each northern hemisphere ecosystem during the pre-breeding and breeding seasons. 
 
@@ -184,7 +184,7 @@ tidy(emtrends(b.chl.trends, pairwise ~ PROVINCE, var = "yearno")$emtrends, conf.
 
 
 
-#MODEL BREEDING SUCCESS TRENDS
+#MODEL BREEDING SUCCESS TRENDS (FAMILY TWO IN SUPPLEMENTARY MATERIALS)
 #====
 #Create generalized linear mixed effects (hierarchical) model for long-term trends in seabird breeding success for each northern hemisphere ecosystem. 
 
