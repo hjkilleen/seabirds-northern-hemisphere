@@ -13,7 +13,7 @@ source("scripts/0_Seabird_Helpers.R")
 #====
 ep <- read_xlsx("output/biophysical_models/biophysical_glmm_summary.xlsx")#load table
 ep$Ecosystem <- as.factor(ep$Ecosystem)
-levels(ep$Ecosystem) <- c("Arctic", "Northern European Seas", "Cold Temperate Northwest Atlantic", "Cold Temperate Northeast Pacific", "Warm Temperate Northwest Pacific", "Cold Temperate Northwest Pacific", "Hawaii")
+levels(ep$Ecosystem) <- c("Arctic", "Northern European Seas", "Northwest Atlantic", "Cold Northeast Pacific", "Warm Northeast Pacific", "Northwest Pacific", "Hawaii")
 #====
 
 #TABLE

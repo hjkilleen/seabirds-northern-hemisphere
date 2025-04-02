@@ -15,12 +15,23 @@ n.trends <- readRDS("output/n.trends.rds")
 #====
 #Create color palette
 values <- c("#14c4ac", "#fc944c", "#8c54fc", "#fc94e4", "#7cdc54", "#fcdc54", "#cc9c44")
+#set up ecosystem labels for facets
+ecosystem.labs <- c("Arctic", "Cold Northeast Pacific", "Northwest Atlantic", "Northwest Pacific", "Hawaii", "Northern European Seas", "Warm Northeast Pacific")
+names(ecosystem.labs) <- c("Arctic", "Cold Temperate Northeast Pacific", "Cold Temperate Northwest Atlantic", "Cold Temperate Northwest Pacific", "Hawaii", "Northern European Seas", "Warm Temperate Northeast Pacific")
 #====
 
 #PLOT BREEDING SUCCESS TRENDS
 #====
 #generate model simulated data
 ff <- pltmm(n.trends, dat)
+eco <- as.vector(unique(dat$PROVINCE))#list of ecosystems
+
+#Limit predicted value domain to the duration of time series
+temp <- list()
+for(i in 1:7){
+  temp[[i]] <- filter(ff, PROVINCE == eco[i], yearno>min(filter(dat, PROVINCE == eco[i])$yearno)-0.1, yearno<max(filter(dat, PROVINCE == eco[i])$yearno)+0.1)
+}
+ff <- bind_rows(temp)
 
 #plot trends for each ecosystem and seabird time series
 plot <- ggplot(data = dat, aes(x = yearno + min(dat$year), y = stbs, group = sppsite)) +
@@ -30,6 +41,7 @@ plot <- ggplot(data = dat, aes(x = yearno + min(dat$year), y = stbs, group = spp
   geom_ribbon(data = ff, aes(x = yearno + min(dat$year), ymin = se.lw, ymax = se.hi, fill = PROVINCE), alpha = 0.45, inherit.aes = FALSE) +
   geom_line(data = ff, aes(x = yearno + min(dat$year), y = y, colour = PROVINCE), lwd = 1, inherit.aes = FALSE) +
   geom_hline(aes(yintercept = 0), linetype = "dashed") + 
+  facet_wrap(~PROVINCE, ncol = 3, labeller = labeller(PROVINCE = ecosystem.labs)) +
   labs(x = "Year", 
        y = "Standardized breeding success \n  (± standard error)") +
   theme_bw() +
@@ -42,8 +54,7 @@ plot <- ggplot(data = dat, aes(x = yearno + min(dat$year), y = stbs, group = spp
     panel.grid.minor = element_blank(),
     legend.position="none")+
   scale_fill_manual(values=values)+
-  scale_color_manual(values=values)+
-  facet_wrap(vars(PROVINCE), ncol = 3)
+  scale_color_manual(values=values)
 ggsave(filename = "figures/seabird.trends.jpg", plot = plot, width = 9, height = 6)#save plot
 #====
 

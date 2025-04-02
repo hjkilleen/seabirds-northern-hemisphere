@@ -18,10 +18,13 @@ b.temp.trends <- readRDS("output/b.temp.trends.rds")
 b.strat.trends <- readRDS("output/b.strat.trends.rds")
 #====
 
-#COLOR PALETTE
+#SET UP
 #====
 #Create color palette
 cols <- c("#14c4ac", "#fc944c", "#8c54fc", "#fc94e4", "#7cdc54", "#fcdc54", "#cc9c44")
+#set up ecosystem labels for facets
+ecosystem.labs <- c("Arctic", "Cold Northeast Pacific", "Northwest Atlantic", "Northwest Pacific", "Hawaii", "Northern European Seas", "Warm Northeast Pacific")
+names(ecosystem.labs) <- c("Arctic", "Cold Temperate Northeast Pacific", "Cold Temperate Northwest Atlantic", "Cold Temperate Northwest Pacific", "Hawaii", "Northern European Seas", "Warm Temperate Northeast Pacific")
 #====
 
 #PLOTTING ENVIRONMENT TRENDS
@@ -56,7 +59,7 @@ plot <- ggplot() +
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     legend.position="none")+
-  facet_wrap(~PROVINCE)
+  facet_wrap(~PROVINCE, ncol = 3, labeller = labeller(PROVINCE = ecosystem.labs))
 
 #SAVE ENVIRONMENTAL TREND PLOT
 #====
