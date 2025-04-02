@@ -39,11 +39,11 @@ prey.df$category <- factor(prey.df$category, levels = all_species)
 
 #ggplot code for counts of predator-prey pairings per province
 #create x axis labels
-new_labels <- c("Cold Temperate Northeast Pacific" = "Cold Temperate\nNortheast Pacific",
-                "Cold Temperate Northwest Atlantic" = "Cold Temperate\nNorthwest Atlantic",
-                "Cold Temperate Northwest Pacific" = "Cold Temperate\nNorthwest Pacific",
+new_labels <- c("Cold Temperate Northeast Pacific" = "Cold\nNortheast Pacific",
+                "Cold Temperate Northwest Atlantic" = "Northwest Atlantic",
+                "Cold Temperate Northwest Pacific" = "Northwest Pacific",
                 "Northern European Seas" = "Northern European\nSeas",
-                "Warm Temperate Northeast Pacific" = "Warm Temperate\nNortheast Pacific")
+                "Warm Temperate Northeast Pacific" = "Warm\nNortheast Pacific")
 
 # Raw prey use barplot for supplement
 original_plot <- ggplot(prey.df, aes(x = province, fill = category)) +
@@ -107,6 +107,7 @@ preyuseplot <- ggplot(prey.df2) + #plot initial version
   geom_col(aes(x = province, y = value, fill = variable), color = "white") +  # Add white lines between stacks
   scale_fill_manual(values = species_color_map) + 
   scale_x_discrete(labels = new_labels) +
+  scale_y_continuous(breaks=c(0.25, 0.5, 0.75, 1)) + 
   labs(x = "Ecosystem (in order of increasing prey diversity)", y = "Proportion of prey used by birds", fill = "Prey item") + 
   theme_classic(base_size = 15) + 
   theme(axis.text.x = element_text(vjust = 0.5, hjust=.5), 
@@ -139,18 +140,14 @@ diversity_df$province <- factor(diversity_df$province, levels = new_order)#order
 
 for(i in 1:length(diversity_df$province)) {
   preyuseplot <- preyuseplot +
-    annotate("text", x = diversity_df$province[i], y = 1.1, label = paste("H'=",round(diversity_df$Shannon_Index[i], 2), sep=""),
-             hjust = 0.5, size = 6) + 
-    theme(axis.text.y=element_blank(), 
-          axis.ticks.y=element_blank()) 
+    annotate("text", x = diversity_df$province[i], y = 1.15, label = paste("H'=",round(diversity_df$Shannon_Index[i], 2), sep=""),
+             hjust = 0.5, size = 6) 
 }
 
 for(i in 1:length(province_site_count$province)) {
   preyuseplot <- preyuseplot +
-    annotate("text", x = province_site_count$province[i], y = 1.05, label = paste("n spp=",province_site_count$sppCount[i], sep=""),
-             hjust = 0.5, size = 6) + 
-    theme(axis.text.y=element_blank(), 
-          axis.ticks.y=element_blank()) 
+    annotate("text", x = province_site_count$province[i], y = 1.1, label = paste("n spp=",province_site_count$sppCount[i], sep=""),
+             hjust = 0.5, size = 6) 
 }
 preyuseplot 
 
