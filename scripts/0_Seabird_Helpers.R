@@ -11,6 +11,7 @@
   library(reshape2)
   library(broom)
   library(lubridate)
+  library(car)
 
 	library(nlme)
 	library(MASS)
