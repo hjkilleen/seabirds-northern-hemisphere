@@ -46,7 +46,7 @@ plot <- ggplot() +
   geom_ribbon(data = ff.bs, aes(x = yearno + 1993, ymin = se.lw, ymax = se.hi), fill = "#0000fc", alpha = 0.15) + 
   geom_line(data = ff.bs, aes(x = yearno + 1993, y = y), linewidth = 1, color = "#0000fc") + 
   geom_hline(data = ff.bs, aes(yintercept = 0), linetype = "dotted", color = "black") + 
-  labs(x = "Year", y = "Standardized Value") + 
+  labs(x = "Year", y = "Standardized Value\n(± standard error)") + 
   lims(y = c(-1.5,1.5)) + 
   scale_color_manual(values = cols) + 
   scale_fill_manual(values = cols) + 
