@@ -17,6 +17,13 @@ cols <- c("#14c4ac", "#fc944c", "#8c54fc", "#fc94e4", "#fcdc54")
 driver.labs <- c("Time Series", "Temperature", "Stratification")
 names(driver.labs) <- c("time", "temp", "strat")
 res$driver <- factor(res$driver, levels = c("time", "temp", "strat"))
+
+#create x axis labels
+new_labels <- c("Cold Temperate Northeast Pacific" = "Cold\nNortheast Pacific",
+                "Cold Temperate Northwest Atlantic" = "Northwest Atlantic",
+                "Cold Temperate Northwest Pacific" = "Northwest Pacific",
+                "Northern European Seas" = "Northern European\nSeas",
+                "Warm Temperate Northeast Pacific" = "Warm\nNortheast Pacific")
 #====
 
 #GENERATE PLOT
@@ -28,7 +35,7 @@ plot <- ggplot() +
   facet_wrap(~driver, labeller = labeller(driver = driver.labs)) + 
   labs(x = "Shannon-Wiener Index (H')", y = "Trend Estimate", color = "Ecosystem") + 
   scale_shape_discrete(name = "Model", labels = c("Breeding Season", "Pre-Breeding Season", "Time Series")) + 
-  scale_color_manual(values = cols) + 
+  scale_color_manual(values = cols, labels = new_labels) + 
   theme_bw() +
   theme(
     axis.text = element_text(size = 10,family="Helvetica"), 
