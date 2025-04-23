@@ -41,6 +41,7 @@ plot <- ggplot(data = dat, aes(x = yearno + min(dat$year), y = stbs, group = spp
   geom_ribbon(data = ff, aes(x = yearno + min(dat$year), ymin = se.lw, ymax = se.hi, fill = PROVINCE), alpha = 0.45, inherit.aes = FALSE) +
   geom_line(data = ff, aes(x = yearno + min(dat$year), y = y, colour = PROVINCE), lwd = 1, inherit.aes = FALSE) +
   geom_hline(aes(yintercept = 0), linetype = "dashed") + 
+  geom_rug(data = dat, aes(color = PROVINCE), alpha = 0.5) + 
   facet_wrap(~PROVINCE, ncol = 3, labeller = labeller(PROVINCE = ecosystem.labs)) +
   labs(x = "Year", 
        y = "Standardized breeding success \n  (± standard error)") +
